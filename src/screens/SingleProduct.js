@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./../components/Header";
 import Rating from "../components/homeComponents/Rating";
 import { Link } from "react-router-dom";
@@ -7,16 +7,24 @@ import {useDispatch, useSelector } from "react-redux"
 import { listProductDetails } from "../redux/Actions/ProductActions";
 import Loading from "../components/LoadingError/Loading";
 
-const SingleProduct = ({ match }) => {
+const SingleProduct = ({ history, match }) => {
+  const [qty, setQty] = useState(1);
   const productId = match.params.id;
   const dispatch = useDispatch();
 
   const productoDetails = useSelector((state) => state.productoDetails);
   const {loading,error, product} = productoDetails;
 
+  
   useEffect(()=>{
     dispatch(listProductDetails(productId))
   },[dispatch,productId]);
+
+   const AddToCartHandle = (e) => {
+    e.preventDefault();
+    history.push(`/cart/${productId}?qty=${qty}`);
+  };
+
   return (
     <>
       <Header />
@@ -51,7 +59,7 @@ const SingleProduct = ({ match }) => {
                 </div>
                 <div className="flex-box d-flex justify-content-between align-items-center">
                   <h6>Status</h6>
-                  {product.countInStock > 0 ? (
+                  {product.countinStock > 0 ? (
                     <span>In Stock</span>
                   ) : (
                     <span>unavailable</span>
@@ -64,12 +72,12 @@ const SingleProduct = ({ match }) => {
                     text={`${product.numReviews} reviews`}
                   />
                 </div>
-                {product.countInStock > 0 ? (
+                {product.countinStock > 0 ? (
                   <>
                     <div className="flex-box d-flex justify-content-between align-items-center">
                       <h6>Quantity</h6>
                       <select>
-                        {[...Array(product.countInStock).keys()].map((x) => (
+                        {[...Array(product.countinStock).keys()].map((x) => (
                           <option key={x + 1} value={x + 1}>
                             {x + 1}
                           </option>
@@ -77,7 +85,7 @@ const SingleProduct = ({ match }) => {
                         )}
                       </select>
                     </div>
-                    <button className="round-black-btn">Add To Cart</button>
+                    <button onClick={AddToCartHandle} className="round-black-btn">Add To Cart</button>
                   </>
                 ) : null}
               </div>
