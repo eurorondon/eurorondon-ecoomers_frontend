@@ -1,8 +1,10 @@
 import { USER_LOGIN_FAIL,
    USER_LOGIN_REQUEST,
-    USER_LOGIN_SUCCESS 
+    USER_LOGIN_SUCCESS, 
+    USER_LOGOUT
   } from "../Constants/UserConstants";
   import axios from "axios";
+import { USER_DETAILS_RESET } from './../Constants/UserConstants';
 
 
 // LOGIN
@@ -33,3 +35,11 @@ export const login = (email, password) => async (dispatch) => {
   }
 };
 
+// LOGOUT
+export const logout = () => (dispatch) => {
+  localStorage.removeItem("userInfo");
+  dispatch({ type: USER_LOGOUT });
+  document.location.href= "/login";
+  //dispatch({ type: USER_DETAILS_RESET });
+ // dispatch({ type: ORDER_LIST_MY_RESET });
+};
