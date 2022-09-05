@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Header from "./../components/Header";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../redux/Actions/cartActions";
+import { addToCart, removefromcart } from "../redux/Actions/cartActions";
 
 const CartScreen = ({ match, location, history }) => {
   window.scrollTo(0, 0);  
@@ -25,8 +25,9 @@ const CartScreen = ({ match, location, history }) => {
     history.push("/login?redirect=shipping");
   };
 
-   const removeFromCartHandle = () => {
-  
+   const removeFromCartHandle = (id) => {
+     dispatch(removefromcart(id));
+    
   };
 
   return (
@@ -61,7 +62,7 @@ const CartScreen = ({ match, location, history }) => {
           cartItems.map((item) => (
             <div className="cart-iterm row">
           <div
-                  onClick={() => removeFromCartHandle()}
+                  onClick={() => removeFromCartHandle(item.product)}
                   className="remove-button d-flex justify-content-center align-items-center"
           >
             <i className="fas fa-times"></i>
@@ -90,7 +91,7 @@ const CartScreen = ({ match, location, history }) => {
                   </select>
                 </div>
           <div className="cart-price mt-3 mt-md-0 col-md-2 align-items-sm-end align-items-start  d-flex flex-column justify-content-center col-sm-7">
-            <h6>SUBTOTAL</h6>
+            <h6>PRICE</h6>
             <h4>${item.price}</h4>
           </div>
             </div>
