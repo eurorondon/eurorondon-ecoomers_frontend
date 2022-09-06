@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-//import { createOrder } from "../Redux/Actions/OrderActions";
-//import { ORDER_CREATE_RESET } from "../Redux/Constants/OrderConstants";
+import { createOrder } from "../redux/Actions/OrderActions";
+import { ORDER_CREATE_RESET } from "../redux/Constants/OrderConstants";
 import Header from "./../components/Header";
 import Message from "./../components/LoadingError/Error";
 
@@ -22,7 +22,7 @@ const PlaceOrderScreen = ({ history }) => {
   cart.itemsPrice = addDecimals(
     cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
   );
-  cart.shippingPrice = addDecimals(cart.itemsPrice > 100 ? 10 : 2);
+  cart.shippingPrice = addDecimals(cart.itemsPrice > 100 ? 0 : 100);
   cart.taxPrice = addDecimals(Number((0.15 * cart.itemsPrice).toFixed(2)));
   cart.totalPrice = (
     Number(cart.itemsPrice) +
@@ -30,13 +30,28 @@ const PlaceOrderScreen = ({ history }) => {
     Number(cart.taxPrice)
   ).toFixed(2);
 
-  //const orderCreate = useSelector((state) => state.orderCreate);
-  //const { order, success, error } = orderCreate;
+  const orderCreate = useSelector((state) => state.orderCreate);
+  const { order, success, error } = orderCreate;
 
- 
+  useEffect(() => {
+    if (success) {
+      history.push(`/order/${order._id}`);
+      dispatch({ type: ORDER_CREATE_RESET });
+    }
+  }, [history, dispatch, success, order]);
 
-  const placeOrderHandler = (e) => {
-    e.preventDefault()
+  const placeOrderHandler = () => {
+    dispatch(
+      createOrder({
+        orderItems: cart.cartItems,
+        shippingAddress: cart.shippingAddress,
+        paymentMethod: cart.paymentMethod,
+        itemsPrice: cart.itemsPrice,
+        shippingPrice: cart.shippingPrice,
+        taxPrice: cart.taxPrice,
+        totalPrice: cart.totalPrice,
+      })
+    );
   };
 
   return (
@@ -162,6 +177,11 @@ const PlaceOrderScreen = ({ history }) => {
               <button type="submit" onClick={placeOrderHandler}>
                 PLACE ORDER
               </button>
+            )}
+            {error && (
+              <div className="my-3 col-12">
+                <Message variant="alert-danger">{error}</Message>
+              </div>
             )}
           </div>
         </div>
